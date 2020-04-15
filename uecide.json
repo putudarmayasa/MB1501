@@ -1,0 +1,18 @@
+{
+    "name": "Mb1501",
+    "provides": "Mb1501.h",
+    "license": "LICENSE.md",
+    "readme": "README.md",
+    "description": "MB1501 Comm",
+    "category": "Communications",
+    "subcategory": "Serial",
+    "maintainer": "Putu Darmayasa",
+    "version": "1.0.0",
+    "family": "all",
+    "core": "all",
+    "install": {
+        "examples": "/",
+        "Mb1501.cpp": "/",
+        "Mb1501.h": "/"
+    }
+}
