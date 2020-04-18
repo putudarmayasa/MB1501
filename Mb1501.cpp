@@ -64,6 +64,8 @@ void Mb1501::pulse_clock() {
   wait(del);
   digitalWrite(_sck, LOW);
   wait(del);
+  digitalWrite(_data, LOW); // release data low
+  wait(del);
 
 }
 
@@ -89,42 +91,19 @@ void Mb1501::wait(uint_fast8_t del) {
 void Mb1501::transferRef(uint16_t val, uint8_t pre) {
 
 
-        uint16_t v2 =
-            ((val & 0x0001) << 15) |
-            ((val & 0x0002) << 13) |
-            ((val & 0x0004) << 11) |
-            ((val & 0x0008) << 9) |
-            ((val & 0x0010) << 7) |
-            ((val & 0x0020) << 5) |
-            ((val & 0x0040) << 3) |
-            ((val & 0x0080) << 1) |
-            ((val & 0x0100) >> 1) |
-            ((val & 0x0200) >> 3) |
-            ((val & 0x0400) >> 5) |
-            ((val & 0x0800) >> 7) |
-            ((val & 0x1000) >> 9) |
-            ((val & 0x2000) >> 11) |
-            ((val & 0x4000) >> 13) |
-            ((val & 0x8000) >> 15) ;
-
-
-        val = v2;
-
 // Transfer Prescaler
     digitalWrite(_data, (pre & 1) ? HIGH : LOW);
     pulse_clock();
 
 // Transfer reference divider
-    for (uint8_t bit = 0u; bit < 14u; bit++)
+    for (uint16_t bit = 14u; bit > 0u; bit--)
     {
-
-        digitalWrite(_data, ((val & (1<<bit)) ? HIGH : LOW));
+        digitalWrite(_data, (((val >> (bit-1)) & 1) ? HIGH : LOW));
         pulse_clock();
     }
 // Transfer Command Bit
     digitalWrite(_data, HIGH);
     pulse_clock();
-
     pulse_le();
 
 
@@ -132,53 +111,23 @@ void Mb1501::transferRef(uint16_t val, uint8_t pre) {
 
 
 
+
 void Mb1501::transferDiv(uint16_t val,uint8_t swa) {
 
 
-        uint16_t v2 =
-            ((val & 0x0001) << 15) |
-            ((val & 0x0002) << 13) |
-            ((val & 0x0004) << 11) |
-            ((val & 0x0008) << 9) |
-            ((val & 0x0010) << 7) |
-            ((val & 0x0020) << 5) |
-            ((val & 0x0040) << 3) |
-            ((val & 0x0080) << 1) |
-            ((val & 0x0100) >> 1) |
-            ((val & 0x0200) >> 3) |
-            ((val & 0x0400) >> 5) |
-            ((val & 0x0800) >> 7) |
-            ((val & 0x1000) >> 9) |
-            ((val & 0x2000) >> 11) |
-            ((val & 0x4000) >> 13) |
-            ((val & 0x8000) >> 15) ;
 
-
-        val = v2;
-
-        uint8_t v3 =
-            ((swa & 0x01) << 7) |
-            ((swa & 0x02) << 5) |
-            ((swa & 0x04) << 3) |
-            ((swa & 0x08) << 1) |
-            ((swa & 0x10) >> 1) |
-            ((swa & 0x20) >> 3) |
-            ((swa & 0x40) >> 5) |
-            ((swa & 0x80) >> 7);
-        swa = v3;
-
-    for (uint8_t bit = 0u; bit < 11u; bit++)
+    for (uint16_t bit = 11u; bit > 0u; bit--)
     {
-        digitalWrite(_data, ((val & (1<<bit)) ? HIGH : LOW));
+        digitalWrite(_data, (((val >> (bit-1)) & 1) ? HIGH : LOW));
         pulse_clock();
     }
 
     /// Swallow Counter
 
-    for (uint8_t bit = 0u; bit <7u; bit++)
+    for (uint8_t bit = 7u; bit >0u; bit--)
     {
 
-        digitalWrite(_data, ((swa & (1<<bit)) ? HIGH : LOW));
+        digitalWrite(_data, (((swa >>(bit-1)) & 1) ? HIGH : LOW));
         pulse_clock();
 
 
@@ -187,7 +136,5 @@ void Mb1501::transferDiv(uint16_t val,uint8_t swa) {
     digitalWrite(_data,  LOW);
     pulse_clock();
     pulse_le();
-
-
 
 }

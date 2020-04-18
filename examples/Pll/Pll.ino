@@ -14,8 +14,7 @@ void setup() {
 
 void loop() {
 
-	uint32_t xtal = 10240000;
-	uint32_t freq = 108500000;
+	float freq = 108500000;
 	uint16_t ref_divider = 1024;
 
 	uint16_t pll_div;
@@ -23,31 +22,35 @@ void loop() {
 
 	// freq = ((prescaler * plldivider)+ swallow) * ( xtal / pll_rev_divider)
 
-	pll_div = freq / ((xtal/ref_divider) * 64) ;
-  pll_swallow = (freq / (xtal / ref_divider) ) - ( 64 * pll_div) ) ;
+	pll_div = (freq / 5000) / 64 ;
+  pll_swallow = (freq / 5000) - ( 64 * pll_div)  ;
+
+
+  
 
 	Serial.print("Sending value ref value: ");
 	Serial.print(ref_divider, DEC);
-	Serial.print(" -- Transfer ref -- ");
-	myPLL.transfer_ref(ref_divider,0);
-	Serial.print(" -- Transfer End Ref -- ");
+  Serial.print("\n");
+
+	MyPLL.transferRef(ref_divider,1);  // 1 : Prescaler 64 , 0 : Prescaler 128
+	
 
 	delay(1000);
 
 
-	Serial.print(" --- Transfer div -- ");
+
 	Serial.print("Sending value div value: ");
 	Serial.print(pll_div, DEC);
-	Serial.print("Sending value swallow value: ");
+	Serial.print(" Sending value swallow value:  ");
 	Serial.print(pll_swallow, DEC);
+  Serial.print("\n");
 
 
-	Serial.print(" ---Transfer div---- ");
-	myPLL.transfer_div(pll_div,pll_swallow);
-	Serial.print(" Transfer End Div ");
+	MyPLL.transferDiv(pll_div,pll_swallow);
 
 
 
 	delay(2000);
+  
 
 }
